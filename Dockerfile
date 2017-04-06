@@ -1,17 +1,10 @@
-FROM alpine:latest
+FROM nginx:latest
 
-MAINTAINER carriera
+COPY default.conf /etc/nginx/conf.d/default.conf
+COPY wordpress.conf /etc/nginx/global/wordpress.conf
+COPY restrictions.conf /etc/nginx/global/restrictions.conf
+COPY proxy.conf /etc/nginx/global/proxy.conf
+COPY docker-entrypoint.sh /entrypoint.sh
 
-RUN apk add --no-cache nginx nano vim
-
-ADD conf/nginx.conf /etc/nginx/
-ADD conf/symfony.conf /etc/nginx/sites-enabled/
-
-RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
-
-WORKDIR /etc/nginx
-
-CMD ["nginx"]
-
-EXPOSE 80
-EXPOSE 443
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
